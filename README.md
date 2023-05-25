@@ -9,3 +9,28 @@ O objetivo é submeter um arquivo pdf ou imagem, fazer a análise de OCR e entã
 ## Referências
 
 https://docs.aws.amazon.com/textract/latest/dg/examples-extract-kvp.html
+
+
+## Testando
+
+Prepare a aplicação
+```sh
+nvm use
+npm install
+```
+
+crie seu arquivo .env conforme o exemplo disponível aqui e preencha com suas credenciais da AWS com permissoes para uso do textract.
+
+Inicie a aplicação
+```sh
+npm start
+```
+
+Acesse a url http://localhost:3000
+![](docs/1.png)
+
+Selecione um arquivo de imagem ou pdf que quer analisar
+![](docs/2.png)
+
+Execute
+![](docs/3.png)
