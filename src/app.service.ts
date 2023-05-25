@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { TextractClient, AnalyzeDocumentCommand, AnalyzeDocumentCommandInput, Block } from "@aws-sdk/client-textract";
 import * as fs from 'fs';
 
@@ -25,23 +25,28 @@ export class AppService {
    * Documentação de referência utilizada para orientar o desenvolvimento dessa poc:
    * https://docs.aws.amazon.com/textract/latest/dg/examples-extract-kvp.html
   */
-  async poc () {
-    const blocks = await this.getBlocks();
-    const { key_map, value_map, block_map } = this.get_kv_map( blocks );
+  async poc ( file ) {
+    try {
+      const filePath = `${__dirname}/../../../tmp/${file.filename}`;
+      const blocks = await this.getBlocks( filePath );
+      const { key_map, value_map, block_map } = this.get_kv_map( blocks );
 
-    const kvs = this.getKVRelationship( key_map, value_map, block_map );
-    this.printKVs( kvs );
-    return kvs;
+      const kvs = this.getKVRelationship( key_map, value_map, block_map );
+      this.printKVs( kvs );
+      return kvs;
+    } catch ( err ) {
+      console.log( err.message );
+      throw new UnprocessableEntityException( err.message );
+    }
   }
 
 
 
 
-  private async getBlocks () {
-    const testFile = '/home/mgarcia/teste.pdf'; //to-do receber via requisição
+  private async getBlocks ( filePath: string ) {
     const params: AnalyzeDocumentCommandInput = {
       Document: {
-        Bytes: fs.readFileSync( testFile )
+        Bytes: fs.readFileSync( filePath )
       },
       FeatureTypes: [ "FORMS" ]
     };
